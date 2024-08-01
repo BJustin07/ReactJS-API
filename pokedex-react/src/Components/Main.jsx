@@ -18,17 +18,39 @@ const Main = () => {
     setPrevPageUrl(res.data.prev);
     getPokemon(res.data.results);
     setLoading(false);
-    console.log(pokeData);
   };
 
+  //Previous implementation is this:
+  //Issue with this is that it duplicates API data/ID {0,0,1,1,2,2,3,3,4,4,5,5}
+
+  // const getPokemon = async (res) => {
+  //     res.map(async (pokemon) => {
+  //       const result = await axios.get(pokemon.url);
+  //       setPokeData((state) => {
+  //         state = [...state, result.data];
+  //         state.sort((a, b) => (a.id > b.id ? 1 : -1));
+  //         return state;
+  //       });
+  //     });
+  //   };
+
+  // I dont fully understand why Promise.all is needed this is chat-gpt generated
+  // what I know is that await already does the waiting for the promise but according to chat gpt
+  // What Promise.all do is : Promise.all(): This waits for all the asynchronous operations (fetching Pokémon data) to
+  // complete before proceeding. It returns a promise that resolves when all the promises in the array have resolved.
+
   const getPokemon = async (res) => {
-    res.map(async (pokemon) => {
-      const res = await axios.get(pokemon.url);
-      setPokeData((state) => {
-        state = [...state, res.data];
-        return state;
-      });
-    });
+    const allPokemons = [];
+
+    await Promise.all(
+      res.map(async (pokemon) => {
+        const result = await axios.get(pokemon.url);
+        allPokemons.push(result.data);
+      }),
+    );
+    //also this sort parameter is chat-gpt generated and I dont fully understand how this works
+    allPokemons.sort((a, b) => a.id - b.id);
+    setPokeData(allPokemons);
   };
 
   useEffect(() => {
@@ -39,21 +61,7 @@ const Main = () => {
     <>
       <div className="container">
         <div className="leftPanel">
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
+          <Card pokemon={pokeData} loading={loading} />
           <div className="navButton">
             <button>Last Page</button>
             <button>Next Page</button>
