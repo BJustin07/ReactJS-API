@@ -29,6 +29,7 @@
     width: 400px;
     gap:1.5rem;
 }
+
 .abilities{
     display: flex;
     justify-content: space-between;
