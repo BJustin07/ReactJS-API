@@ -16,7 +16,8 @@ const Main = () => {
     setLoading(true);
     const res = await axios.get(url);
     setNextPageUrl(res.data.next);
-    setPrevPageUrl(res.data.prev);
+    setPrevPageUrl(res.data.previous);
+    console.log(res.data.previous);
     getPokemon(res.data.results);
     setLoading(false);
   };
@@ -68,8 +69,26 @@ const Main = () => {
             infoPokemon={(poke) => setPokeDex(poke)}
           />
           <div className="navButton">
-            <button>Last Page</button>
-            <button>Next Page</button>
+            {prevPageUrl && (
+              <button
+                onClick={() => {
+                  setPokeData([]);
+                  setUrl(prevPageUrl);
+                }}
+              >
+                Previous
+              </button>
+            )}
+            {nextPageUrl && (
+              <button
+                onClick={() => {
+                  setPokeData([]);
+                  setUrl(nextPageUrl);
+                }}
+              >
+                Next
+              </button>
+            )}
           </div>
         </div>
         <div className="rightPanel">
